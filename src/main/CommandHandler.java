@@ -1,4 +1,7 @@
-package main.commands;
+package main;
+
+import main.commands.*;
+import main.contracts.Command;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +11,6 @@ public class CommandHandler {
 
     public CommandHandler() {
         commands = new HashMap<>();
-        commands.put("validate", new ValidateCommand());
         commands.put("open", new OpenCommand());
         commands.put("close", new CloseCommand());
         commands.put("save", new SaveCommand());

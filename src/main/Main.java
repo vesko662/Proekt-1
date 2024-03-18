@@ -1,6 +1,5 @@
 package main;
 
-import main.commands.CommandHandler;
 import java.util.Scanner;
 
 public class Main {

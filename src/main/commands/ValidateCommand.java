@@ -1,6 +1,8 @@
 package main.commands;
 
-public class ValidateCommand implements Command{
+import main.contracts.Command;
+
+public class ValidateCommand implements Command {
     @Override
     public void execute(String[] args) {
 
