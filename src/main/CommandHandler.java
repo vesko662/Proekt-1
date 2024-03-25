@@ -2,6 +2,7 @@ package main;
 
 import main.commands.*;
 import main.contracts.Command;
+import main.singletons.FileData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,21 +13,37 @@ public class CommandHandler {
     public CommandHandler() {
         commands = new HashMap<>();
         commands.put("open", new OpenCommand());
-        commands.put("close", new CloseCommand());
-        commands.put("save", new SaveCommand());
     }
 
     public void executeCommand(String input) {
-        String[] sInput = input.split(" ");
+        String[] sInput = input.split(" ",2);
         String commandKeyword = sInput[0];
-        String[] args = new String[sInput.length - 1];
-        System.arraycopy(sInput, 1, args, 0, sInput.length - 1);
 
         Command command = commands.get(commandKeyword);
         if (command != null) {
-            command.execute(args);
+            command.execute(sInput.length==1?"":sInput[1]);
+            checkFileState();
         } else {
             System.out.println("Invalid command.");
         }
+        FileData f=FileData.getInstance();
+    }
+
+    private void checkFileState()
+    {
+        if(FileData.getInstance().isFileOpen())
+        {
+            if (commands.size()>1) {
+                return;
+            }
+            commands.put("close", new CloseCommand());
+            commands.put("save", new SaveCommand());
+        }
+        else
+        {
+            commands = new HashMap<>();
+            commands.put("open", new OpenCommand());
+        }
     }
 }
+//open D:\Programing\University\OOP2\test.txt

@@ -2,15 +2,20 @@ package main.commands;
 
 import main.File.FileRead;
 import main.contracts.Command;
+import main.singletons.FileData;
 
 
 public class OpenCommand implements Command {
     @Override
-    public void execute(String[] args) {
-        String filePath=args[0];
+    public void execute(String args) {
         FileRead fileRead=new FileRead();
-        String content=fileRead.readFile(filePath);
-        System.out.println(fileRead.getFileName());
+        String content=fileRead.readFile(args);
+        FileData fileData=FileData.getInstance();
+        fileData.setFileData(content);
+        fileData.setFileName(fileRead.getFileName());
+        fileData.setFilePath(args);
+        fileData.setFileOpen(true);
+
     }
 }
 
