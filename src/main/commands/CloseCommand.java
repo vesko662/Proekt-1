@@ -12,4 +12,9 @@ public class CloseCommand implements Command {
         fileData.setFilePath("");
         fileData.setFileOpen(false);
     }
+
+    @Override
+    public String getDescription() {
+        return "closes currently opened file";
+    }
 }

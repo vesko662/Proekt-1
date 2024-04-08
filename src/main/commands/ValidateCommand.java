@@ -7,4 +7,9 @@ public class ValidateCommand implements Command {
     public void execute(String args) {
 
     }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
 }

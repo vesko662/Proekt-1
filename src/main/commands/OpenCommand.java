@@ -17,5 +17,10 @@ public class OpenCommand implements Command {
         fileData.setFileOpen(true);
 
     }
+
+    @Override
+    public String getDescription() {
+        return "opens <file>";
+    }
 }
 

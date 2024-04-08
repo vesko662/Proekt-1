@@ -26,7 +26,7 @@ public class CommandHandler {
         } else {
             System.out.println("Invalid command.");
         }
-        FileData f=FileData.getInstance();
+
     }
 
     private void checkFileState()
@@ -38,6 +38,8 @@ public class CommandHandler {
             }
             commands.put("close", new CloseCommand());
             commands.put("save", new SaveCommand());
+            commands.put("saveas", new SaveAsCommand());
+            commands.put("help", new HelpCommand(commands));
         }
         else
         {

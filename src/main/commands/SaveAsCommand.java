@@ -11,4 +11,9 @@ public class SaveAsCommand implements Command {
         FileData fd=FileData.getInstance();
         fw.writeFile(args,fd.getFileData());
     }
+
+    @Override
+    public String getDescription() {
+        return "saves the currently open file in <file>";
+    }
 }

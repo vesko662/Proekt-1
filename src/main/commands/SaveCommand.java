@@ -11,4 +11,10 @@ public class SaveCommand implements Command {
         FileData fd=FileData.getInstance();
         fw.writeFile(fd.getFilePath(),fd.getFileData());
     }
+
+    @Override
+    public String getDescription() {
+        return "saves the currently open file";
+
+    }
 }

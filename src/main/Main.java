@@ -8,11 +8,13 @@ public class Main {
         CommandHandler commandHandler = new CommandHandler();
         Scanner scanner = new Scanner(System.in);
 
-        while (true)
-        {
-            String input = scanner.nextLine();
-            commandHandler.executeCommand(input);
-        }
+       do
+       {
+           String input = scanner.nextLine();
+           commandHandler.executeCommand(input);
+       }while(true);
+
+
 
 
     }
