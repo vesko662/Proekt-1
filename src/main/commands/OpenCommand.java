@@ -1,6 +1,6 @@
 package main.commands;
 
-import main.File.FileRead;
+import main.file.FileRead;
 import main.contracts.Command;
 import main.singletons.FileData;
 

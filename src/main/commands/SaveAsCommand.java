@@ -1,6 +1,6 @@
 package main.commands;
 
-import main.File.FileWrite;
+import main.file.FileWrite;
 import main.contracts.Command;
 import main.singletons.FileData;
 

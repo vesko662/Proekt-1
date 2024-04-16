@@ -40,6 +40,7 @@ public class CommandHandler {
             commands.put("save", new SaveCommand());
             commands.put("saveas", new SaveAsCommand());
             commands.put("help", new HelpCommand(commands));
+            commands.put("print", new PrintCommand());
         }
         else
         {
@@ -48,4 +49,4 @@ public class CommandHandler {
         }
     }
 }
-//open D:\Programing\University\OOP2\test.txt
+//open D:\Programing\University\OOP2\proect\file.json
