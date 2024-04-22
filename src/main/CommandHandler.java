@@ -41,6 +41,9 @@ public class CommandHandler {
             commands.put("saveas", new SaveAsCommand());
             commands.put("help", new HelpCommand(commands));
             commands.put("print", new PrintCommand());
+            commands.put("search",new SearchCommand());
+            commands.put("delete",new DeleteCommand());
+
         }
         else
         {
