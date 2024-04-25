@@ -1,5 +1,8 @@
 package main.file;
 
+import main.contracts.Validate;
+import main.validate.JsonValidator;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -37,8 +40,21 @@ public class FileRead {
         } catch (IOException e) {
             //TODO Error handler
         }
+        Validate jsonValidator=new JsonValidator(fileContent.toString());
 
+        boolean isValid=false;
+        try {
+            isValid =  jsonValidator.validate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!isValid)
+        {
+            //TODO Error handler
+        }
         return fileContent.toString();
     }
 
 }
+
+

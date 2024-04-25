@@ -3,9 +3,6 @@ package main.commands;
 import main.contracts.Command;
 import main.singletons.FileData;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class DeleteCommand implements Command {
     @Override
     public void execute(String args) {

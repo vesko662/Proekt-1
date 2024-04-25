@@ -9,68 +9,61 @@ public class PrintCommand implements Command {
     public void execute(String args) {
         FileData data = FileData.getInstance();
         String json = data.getFileData();
-        System.out.println(print(json));
-    }
 
-    public String print(String json) {
-        StringBuilder printJson = new StringBuilder();
+
+        StringBuilder result = new StringBuilder();
         int indentLevel = 0;
         boolean inQuotes = false;
-        int length = json.length();
 
-        for (int i = 0; i < length; i++) {
-            char charAt = json.charAt(i);
-            switch (charAt) {
+        for (int i = 0; i < json.length(); i++) {
+            char position = json.charAt(i);
+
+            switch (position) {
                 case '\"':
                     inQuotes = !inQuotes;
-                    printJson.append(charAt);
+                    result.append(position);
                     break;
                 case '{':
                 case '[':
                     if (!inQuotes) {
-                        printJson.append(charAt);
-                        printJson.append("\n").append(indent(indentLevel + 1));
+                        result.append(position).append("\n");
                         indentLevel++;
+                        addIndent(result, indentLevel);
                     } else {
-                        printJson.append(charAt);
+                        result.append(position);
                     }
                     break;
                 case '}':
                 case ']':
                     if (!inQuotes) {
-                        if (i > 0 && json.charAt(i - 1) != '{' && json.charAt(i - 1) != '[') {
-                            printJson.append("\n").append(indent(indentLevel));
-                        }
-                        printJson.append(charAt);
+                        result.append("\n");
                         indentLevel--;
+                        addIndent(result, indentLevel);
+                        result.append(position);
                     } else {
-                        printJson.append(charAt);
+                        result.append(position);
                     }
                     break;
                 case ',':
-                    printJson.append(charAt);
-                    if (!inQuotes && nextCharNotBracket(json, i, length)) {
-                        printJson.append("\n").append(indent(indentLevel));
+                    if (!inQuotes) {
+                        result.append(position).append("\n");
+                        addIndent(result, indentLevel);
+                    } else {
+                        result.append(position);
                     }
                     break;
                 default:
-                    printJson.append(charAt);
+                    if (!Character.isWhitespace(position) || inQuotes) {
+                        result.append(position);
+                    }
+                    break;
             }
         }
-        return printJson.toString();
+        System.out.println(result.toString());
     }
 
-    private static String indent(int level) {
-        return "    ".repeat(Math.max(0, level));
-    }
-
-    private static boolean nextCharNotBracket(String str, int index, int length) {
-        for (int i = index + 1; i < length; i++) {
-            char c = str.charAt(i);
-            if (c == '}' || c == ']') return false;
-            if (c != ' ' && c != '\n') return true;
-        }
-        return true;
+    private  void addIndent(StringBuilder result, int indentLevel) {
+        result.append("    ".repeat(Math.max(0, indentLevel)));
     }
 
     @Override

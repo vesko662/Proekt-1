@@ -4,7 +4,6 @@ import main.file.FileRead;
 import main.contracts.Command;
 import main.singletons.FileData;
 
-
 public class OpenCommand implements Command {
     @Override
     public void execute(String args) {
@@ -15,7 +14,6 @@ public class OpenCommand implements Command {
         fileData.setFileName(fileRead.getFileName());
         fileData.setFilePath(args);
         fileData.setFileOpen(true);
-
     }
 
     @Override

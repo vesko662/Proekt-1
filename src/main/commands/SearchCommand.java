@@ -10,8 +10,6 @@ public class SearchCommand implements Command {
         String json=data.getFileData().trim();
 
 
-
-
         String[] keys = json.split("\"" + args + "\"\\s*:\\s*");
         if (keys.length > 1) {
             for (int i = 1; i < keys.length; i++) {
