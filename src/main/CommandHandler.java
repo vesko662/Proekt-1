@@ -24,10 +24,11 @@ public class CommandHandler {
         if (command != null) {
             try {
                 command.execute(sInput.length==1?"":sInput[1]);
-            } catch (CommandException e) {
-                e.printStackTrace();
+                checkFileState();
+            } catch (CommandException ce) {
+                System.out.println(ce.getMessage());
             }
-            checkFileState();
+
         } else {
             System.out.println("Invalid command.");
         }
@@ -38,7 +39,7 @@ public class CommandHandler {
     {
         if(FileData.getInstance().isFileOpen())
         {
-            if (commands.size()>1) {
+            if (commands.size()>2) {
                 return;
             }
             commands.put("close", new CloseCommand());
