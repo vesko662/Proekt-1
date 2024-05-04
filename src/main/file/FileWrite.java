@@ -9,7 +9,7 @@ public class FileWrite {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             bw.write(content);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 

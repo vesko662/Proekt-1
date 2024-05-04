@@ -1,24 +1,26 @@
 package main.commands;
 
 import main.contracts.Command;
+import main.enums.CommandMessages;
+import main.exeptions.CommandException;
 import main.singletons.FileData;
 
 public class SearchCommand implements Command {
     @Override
-    public void execute(String args) {
+    public void execute(String args) throws CommandException {
         FileData data = FileData.getInstance();
         String json=data.getFileData().trim();
 
+        String[] foundKeys = json.split("\"" + args + "\"\\s*:\\s*");
 
-        String[] keys = json.split("\"" + args + "\"\\s*:\\s*");
-        if (keys.length > 1) {
-            for (int i = 1; i < keys.length; i++) {
-                String value = keys[i];
+        if (foundKeys.length > 1) {
+            for (int i = 1; i < foundKeys.length; i++) {
+                String value = foundKeys[i];
                 int endIdx = findEndOfValue(value);
                 System.out.println(value.substring(0, endIdx));
             }
         } else {
-            System.out.println("Key not found: " + args);//TODO error handling
+           error(CommandMessages.INVALID_KEY);
         }
     }
     private int findEndOfValue(String value) {
@@ -50,5 +52,9 @@ public class SearchCommand implements Command {
     @Override
     public String getDescription() {
         return "Shows all the matches.";
+    }
+
+    private void error(CommandMessages commandMessages) throws CommandException {
+        throw new CommandException(commandMessages);
     }
 }

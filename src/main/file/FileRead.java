@@ -1,6 +1,9 @@
 package main.file;
 
 import main.contracts.Validate;
+import main.enums.FileMessages;
+import main.exeptions.FileException;
+import main.exeptions.ValidateException;
 import main.validate.JsonValidator;
 
 import java.io.BufferedReader;
@@ -16,17 +19,21 @@ public class FileRead {
         return fileName;
     }
 
-    public String readFile(String filePath)
-    {
+    public String readFile(String filePath) throws FileException {
+        if (!filePath.toLowerCase().endsWith(".json")) {
+            error(FileMessages.WRONG_EXTENSION);
+        }
+
         StringBuilder fileContent=new StringBuilder();
 
         try {
             File file = new File(filePath);
             if (!file.exists()) {
-                if(file.createNewFile()) {
-                    //TODO end
-                } else {
-                    //TODO Error for not successful creation
+                if(!file.createNewFile()) {
+                    error(FileMessages.UNSUCCESSFUL_CREATED_FILE);
+                }
+                else {
+                    return "{ }";
                 }
             }
 
@@ -38,23 +45,23 @@ public class FileRead {
             }
             fileName=file.getName();
         } catch (IOException e) {
-            //TODO Error handler
+            error(FileMessages.ERROR_WHEN_READING_FILE);
         }
-        Validate jsonValidator=new JsonValidator(fileContent.toString());
 
-        boolean isValid=false;
         try {
-            isValid =  jsonValidator.validate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (!isValid)
+        Validate jsonValidator=new JsonValidator(fileContent.toString());
+         jsonValidator.validate();
+
+        } catch (ValidateException ve)
         {
-            //TODO Error handler
+         System.out.println(ve.getMessage());
+         error(FileMessages.INCORRECT_VALIDATION);
         }
         return fileContent.toString();
     }
-
+    private void error(FileMessages fileMessages) throws FileException {
+        throw new FileException(fileMessages);
+    }
 }
 
 

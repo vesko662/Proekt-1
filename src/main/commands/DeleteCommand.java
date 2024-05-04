@@ -1,26 +1,24 @@
 package main.commands;
 
 import main.contracts.Command;
+import main.enums.CommandMessages;
+import main.exeptions.CommandException;
 import main.singletons.FileData;
 
 public class DeleteCommand implements Command {
     @Override
-    public void execute(String args) {
+    public void execute(String args) throws CommandException {
         FileData data = FileData.getInstance();
         String json=data.getFileData();
-        data.setFileData(deleteElement(json,args));
-    }
 
-
-    public  String deleteElement(String json, String fullPath) {
-        String[] keys = fullPath.split("\\.");
+        String[] keys = args.split("\\.");
         int start = 0;
 
         for (String key : keys) {
             String searchKey = "\"" + key + "\":";
             start = json.indexOf(searchKey, start);
             if (start == -1) {
-                return "Key not found: " + key; //TODO error handling
+                error(CommandMessages.INVALID_KEY);
             }
             start += searchKey.length();
         }
@@ -43,23 +41,29 @@ public class DeleteCommand implements Command {
             before = before.substring(0, before.lastIndexOf(","));
         }
 
-        return before + after;
+        data.setFileData(before + after);
     }
 
     private  int findEndOfValue(String json, int start) {
         int depth = 0;
         boolean inQuotes = false;
-        for (int i = start; i < json.length(); i++) {
+        for (int i = start; i < json.length(); i++)
+        {
             char c = json.charAt(i);
-            if (c == '"' && (i == 0 || json.charAt(i - 1) != '\\')) {
+            if (c == '"' && (i == 0 || json.charAt(i - 1) != '\\'))
+            {
                 inQuotes = !inQuotes;
-            } else if (!inQuotes) {
-                if (c == '{' || c == '[') {
+            } else if (!inQuotes)
+            {
+                if (c == '{' || c == '[')
+                {
                     depth++;
-                } else if (c == '}' || c == ']') {
+                } else if (c == '}' || c == ']')
+                {
                     depth--;
                 }
-                if ((c == ',' && depth == 0) || depth < 0) {
+                if ((c == ',' && depth == 0) || depth < 0)
+                {
                     return i;
                 }
             }
@@ -70,6 +74,10 @@ public class DeleteCommand implements Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "deletes the element at the given <path>";
+    }
+
+    private void error(CommandMessages commandMessages) throws CommandException {
+        throw new CommandException(commandMessages);
     }
 }

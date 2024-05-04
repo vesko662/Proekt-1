@@ -9,9 +9,9 @@ public class PrintCommand implements Command {
     public void execute(String args) {
         FileData data = FileData.getInstance();
         String json = data.getFileData();
-
-
         StringBuilder result = new StringBuilder();
+
+
         int indentLevel = 0;
         boolean inQuotes = false;
 
@@ -28,7 +28,7 @@ public class PrintCommand implements Command {
                     if (!inQuotes) {
                         result.append(position).append("\n");
                         indentLevel++;
-                        addIndent(result, indentLevel);
+                        appendIndent(result, indentLevel);
                     } else {
                         result.append(position);
                     }
@@ -38,7 +38,7 @@ public class PrintCommand implements Command {
                     if (!inQuotes) {
                         result.append("\n");
                         indentLevel--;
-                        addIndent(result, indentLevel);
+                        appendIndent(result, indentLevel);
                         result.append(position);
                     } else {
                         result.append(position);
@@ -47,7 +47,7 @@ public class PrintCommand implements Command {
                 case ',':
                     if (!inQuotes) {
                         result.append(position).append("\n");
-                        addIndent(result, indentLevel);
+                        appendIndent(result, indentLevel);
                     } else {
                         result.append(position);
                     }
@@ -62,7 +62,7 @@ public class PrintCommand implements Command {
         System.out.println(result.toString());
     }
 
-    private  void addIndent(StringBuilder result, int indentLevel) {
+    private  void appendIndent(StringBuilder result, int indentLevel) {
         result.append("    ".repeat(Math.max(0, indentLevel)));
     }
 

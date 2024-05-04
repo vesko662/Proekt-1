@@ -1,6 +1,8 @@
 package main.validate;
 
 import main.contracts.Validate;
+import main.enums.ValidationMessages;
+import main.exeptions.ValidateException;
 
 public class JsonValidator implements Validate {
 
@@ -34,12 +36,12 @@ public class JsonValidator implements Validate {
             }
         }
 
-        private void error(String message) throws Exception {
-            throw new Exception("Error at position " + position + ": " + message);
+        private void error(ValidationMessages validationMessages) throws ValidateException {
+            throw new ValidateException(validationMessages,position);
         }
 
-        private void validateObject() throws Exception {
-            if (currentChar() != '{') error("Expected '{'");
+        private void validateObject() throws ValidateException {
+            if (currentChar() != '{') error(ValidationMessages.EXPECTED_CURLY_BRACKETS1);
             nextChar();
             skipWhitespace();
 
@@ -51,7 +53,7 @@ public class JsonValidator implements Validate {
             while (true) {
                 validateString();
                 skipWhitespace();
-                if (currentChar() != ':') error("Expected ':' after key");
+                if (currentChar() != ':') error(ValidationMessages.EXPECTED_DUALITY);
                 nextChar();
                 skipWhitespace();
                 validateValue();
@@ -62,14 +64,14 @@ public class JsonValidator implements Validate {
                     return;
                 }
 
-                if (currentChar() != ',') error("Expected ',' or '}'");
+                if (currentChar() != ',') error(ValidationMessages.EXPECTED_CURLY_BRACKETS_OR_COMMA);
                 nextChar();
                 skipWhitespace();
             }
         }
 
-        private void validateArray() throws Exception {
-            if (currentChar() != '[') error("Expected '['");
+        private void validateArray() throws ValidateException {
+            if (currentChar() != '[') error(ValidationMessages.EXPECTED_SQUARE_BRACKETS1);
             nextChar();
             skipWhitespace();
 
@@ -87,14 +89,14 @@ public class JsonValidator implements Validate {
                     return;
                 }
 
-                if (currentChar() != ',') error("Expected ',' or ']'");
+                if (currentChar() != ',') error(ValidationMessages.EXPECTED_SQUARE_BRACKETS_OR_COMMA);
                 nextChar();
                 skipWhitespace();
             }
         }
 
-        private void validateString() throws Exception {
-            if (currentChar() != '\"') error("Expected '\"'");
+        private void validateString() throws ValidateException {
+            if (currentChar() != '\"') error(ValidationMessages.EXPECTED_QUOTES);
             do {
                 nextChar();
                 if (currentChar() == '\\') {
@@ -103,11 +105,11 @@ public class JsonValidator implements Validate {
                 }
             } while (hasNext() && currentChar() != '\"');
 
-            if (currentChar() != '\"') error("Unclosed string");
+            if (currentChar() != '\"') error(ValidationMessages.UNCLOSED_STRING);
             nextChar();
         }
 
-        private void validateValue() throws Exception {
+        private void validateValue() throws ValidateException {
             skipWhitespace();
             char c = currentChar();
             if (c == '{') {
@@ -116,21 +118,34 @@ public class JsonValidator implements Validate {
                 validateArray();
             } else if (c == '\"') {
                 validateString();
-            } else if (Character.isDigit(c) || c == '-') {
+            }else if (c == 't' || c == 'f') {
+                validateBoolean();
+            }else if (Character.isDigit(c) || c == '-') {
 
                 while (hasNext() && !Character.isWhitespace(currentChar()) &&
                         currentChar() != ',' && currentChar() != ']' && currentChar() != '}') {
                     nextChar();
                 }
             } else {
-                error("Invalid value");
+                error(ValidationMessages.INVALID_VALUE);
             }
         }
 
+        private void validateBoolean() throws ValidateException {
+        if (json.startsWith("true", position)) {
+            position += 4;
+        } else if (json.startsWith("false", position)) {
+            position += 5;
+        } else {
+            error(ValidationMessages.INVALID_BOOLEAN);
+        }
+    }
         @Override
-        public boolean validate() throws Exception {
+        public void validate() throws ValidateException {
+            if (!json.startsWith("{")) {
+                error(ValidationMessages.INVALID_JSON_START);
+            }
             validateValue();
-            return true;
         }
 }
 
