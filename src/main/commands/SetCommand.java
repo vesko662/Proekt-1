@@ -3,7 +3,9 @@ package main.commands;
 import main.contracts.Command;
 import main.enums.CommandMessages;
 import main.exeptions.CommandException;
+import main.exeptions.ValidateException;
 import main.singletons.FileData;
+import main.validate.JsonValidator;
 
 public class SetCommand implements Command {
     @Override
@@ -13,15 +15,17 @@ public class SetCommand implements Command {
         String[] ar=args.split(" ",2);
         String path=ar[0];
         String newValue=ar[1];
-//TODO fix validation
-//        try {
-//            JsonValidator validate=new JsonValidator("{"+newValue+"}");
-//            validate.validate();
-//        }catch (ValidateException ve)
-//        {
-//            System.out.println(ve.getMessage());
-//            error(CommandMessages.INVALID_JSON);
-//        }
+
+        try {
+
+                JsonValidator validate=new JsonValidator(newValue);
+                validate.validateValue();
+
+        }catch (ValidateException ve)
+       {
+            System.out.println(ve.getMessage());
+           error(CommandMessages.INVALID_JSON);
+      }
 
 
         String[] splitPath = path.split("\\.");

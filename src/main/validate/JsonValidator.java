@@ -109,7 +109,7 @@ public class JsonValidator implements Validate {
             nextChar();
         }
 
-        private void validateValue() throws ValidateException {
+        public void validateValue() throws ValidateException {
             skipWhitespace();
             char c = currentChar();
             if (c == '{') {
