@@ -4,6 +4,7 @@ import main.contracts.Validate;
 import main.enums.FileMessages;
 import main.exeptions.FileException;
 import main.exeptions.ValidateException;
+import main.singletons.FileData;
 import main.validate.JsonValidator;
 
 import java.io.BufferedReader;
@@ -20,9 +21,16 @@ public class FileRead {
     }
 
     public String readFile(String filePath) throws FileException {
+        if (FileData.getInstance().isFileOpen())
+        {
+            error(FileMessages.FILE_OPEN);
+        }
+
+
         if (!filePath.toLowerCase().endsWith(".json")) {
             error(FileMessages.WRONG_EXTENSION);
         }
+
 
         StringBuilder fileContent=new StringBuilder();
 
