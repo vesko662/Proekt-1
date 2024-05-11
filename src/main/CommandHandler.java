@@ -49,7 +49,7 @@ public class CommandHandler {
             commands.put("print", new PrintCommand());
             commands.put("search",new SearchCommand());
             commands.put("delete",new DeleteCommand());
-           // commands.put("move",new MoveCommand());
+            commands.put("move",new MoveCommand());
             commands.put("set",new SetCommand());
             commands.put("create",new CreateCommand());
             commands.put("exit",new ExitCommand());

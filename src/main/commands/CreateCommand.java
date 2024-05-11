@@ -53,9 +53,6 @@ public class CreateCommand implements Command {
                error(CommandMessages.INVALID_KEY);
            }
 
-            int colonIndex = newJson.indexOf(":", keyIndex);
-
-
             if (i == splitPath.length - 1) {
                 int nextBrace = newJson.indexOf("}", startIndex);
                 if (newJson.charAt(nextBrace - 1) == '{') {
