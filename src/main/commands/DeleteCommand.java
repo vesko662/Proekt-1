@@ -10,7 +10,10 @@ public class DeleteCommand implements Command {
     public void execute(String args) throws CommandException {
         FileData data = FileData.getInstance();
         String json=data.getFileData();
-
+        if (args.equals(""))
+        {
+            error(CommandMessages.INVALID_ARGUMENTS);
+        }
         String[] keys = args.split("\\.");
         int start = 0;
 
@@ -42,6 +45,7 @@ public class DeleteCommand implements Command {
         }
 
         data.setFileData(before + after);
+        System.out.println("Successfully deleted at "+ args);
     }
 
     private  int findEndOfValue(String json, int start) {

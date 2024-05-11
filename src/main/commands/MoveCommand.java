@@ -11,6 +11,10 @@ public class MoveCommand implements Command {
         FileData data = FileData.getInstance();
         String json=data.getFileData();
         String[] paths=args.split(" ");
+        if (paths.length<2)
+        {
+            error(CommandMessages.INVALID_ARGUMENTS);
+        }
         String pathFrom=paths[0];
         String pathTo=paths[1];
 
@@ -44,7 +48,7 @@ public class MoveCommand implements Command {
 
         data.setFileData(before+ after);
       new SetCommand().execute(pathTo+" "+element);
-
+        System.out.println("Successfully moved at "+ pathTo);
     }
 
     private  int findEndOfValue(String json, int start) {
@@ -78,6 +82,6 @@ public class MoveCommand implements Command {
     }
     @Override
     public String getDescription() {
-        return null;
+        return "move <from> <to> move the data from given path <from> to the other path <to>";
     }
 }

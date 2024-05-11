@@ -13,6 +13,10 @@ public class CreateCommand implements Command {
         FileData data = FileData.getInstance();
         String json = data.getFileData();
         String[] parts = args.split(" ", 2);
+        if (parts.length<2)
+        {
+            error(CommandMessages.INVALID_ARGUMENTS);
+        }
         String path=parts[0];
         String newValue=parts[1];
 
@@ -70,6 +74,7 @@ public class CreateCommand implements Command {
         }
 
         data.setFileData(newJson.toString());
+        System.out.println("Successfully created at "+path);
     }
 
     @Override

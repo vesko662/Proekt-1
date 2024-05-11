@@ -10,7 +10,10 @@ public class SearchCommand implements Command {
     public void execute(String args) throws CommandException {
         FileData data = FileData.getInstance();
         String json=data.getFileData().trim();
-
+        if (args.equals(""))
+        {
+            error(CommandMessages.INVALID_ARGUMENTS);
+        }
         String[] foundKeys = json.split("\"" + args + "\"\\s*:\\s*");
 
         if (foundKeys.length > 1) {

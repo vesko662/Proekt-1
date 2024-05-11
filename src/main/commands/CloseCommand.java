@@ -8,9 +8,11 @@ public class CloseCommand implements Command {
     public void execute(String args) {
         FileData fileData=FileData.getInstance();
         fileData.setFileData("");
+        String name=fileData.getFileName();
         fileData.setFileName("");
         fileData.setFilePath("");
         fileData.setFileOpen(false);
+        System.out.println("Successfully closed "+name);
     }
 
     @Override

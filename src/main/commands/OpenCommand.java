@@ -17,10 +17,13 @@ public class OpenCommand implements Command {
             fileData.setFileName(fileRead.getFileName());
             fileData.setFilePath(args);
             fileData.setFileOpen(true);
+            System.out.println("Successfully opened "+ fileData.getFileName());
         }catch (FileException fe)
         {
             System.out.println(fe.getMessage());
         }
+
+
     }
 
     @Override

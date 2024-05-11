@@ -13,6 +13,10 @@ public class SetCommand implements Command {
         FileData data = FileData.getInstance();
         String json=data.getFileData().trim();
         String[] ar=args.split(" ",2);
+        if (ar.length<2)
+        {
+            error(CommandMessages.INVALID_ARGUMENTS);
+        }
         String path=ar[0];
         String newValue=ar[1];
 

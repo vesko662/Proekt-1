@@ -14,6 +14,7 @@ public class CommandHandler {
     public CommandHandler() {
         commands.put("open", new OpenCommand());
         commands.put("exit",new ExitCommand());
+        commands.put("help", new HelpCommand(commands));
     }
 
     public void executeCommand(String input) {
@@ -39,13 +40,12 @@ public class CommandHandler {
     {
         if(FileData.getInstance().isFileOpen())
         {
-            if (commands.size()>2) {
+            if (commands.size()>3) {
                 return;
             }
             commands.put("close", new CloseCommand());
             commands.put("save", new SaveCommand());
             commands.put("saveas", new SaveAsCommand());
-            commands.put("help", new HelpCommand(commands));
             commands.put("print", new PrintCommand());
             commands.put("search",new SearchCommand());
             commands.put("delete",new DeleteCommand());
@@ -59,6 +59,7 @@ public class CommandHandler {
             commands = new HashMap<>();
             commands.put("open", new OpenCommand());
             commands.put("exit",new ExitCommand());
+            commands.put("help", new HelpCommand(commands));
         }
     }
 }

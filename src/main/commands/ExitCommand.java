@@ -6,6 +6,7 @@ import main.exeptions.CommandException;
 public class ExitCommand implements Command {
     @Override
     public void execute(String args) throws CommandException {
+        System.out.println("Exiting the program...");
         System.exit(0);
     }
 
