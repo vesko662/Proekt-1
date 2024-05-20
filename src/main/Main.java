@@ -10,6 +10,7 @@ public class Main {
 
        do
        {
+           System.out.print("> ");
            String input = scanner.nextLine();
            commandHandler.executeCommand(input);
        }while(true);

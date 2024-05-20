@@ -2,7 +2,7 @@ package main.commands;
 
 import main.contracts.Command;
 import main.enums.CommandMessages;
-import main.exeptions.CommandException;
+import main.exceptions.CommandException;
 import main.singletons.FileData;
 
 public class SearchCommand implements Command {
@@ -30,13 +30,13 @@ public class SearchCommand implements Command {
         int endIndex = 0;
         if (value.charAt(0) == '[' || value.charAt(0) == '{') {
 
-            int openBrackets = 1;
-            for (int i = 1; i < value.length() && openBrackets > 0; i++) {
+            int depth = 1;
+            for (int i = 1; i < value.length() && depth > 0; i++) {
                 char c = value.charAt(i);
                 if ((c == '{' || c == '[')) {
-                    openBrackets++;
+                    depth++;
                 } else if ((c == '}' || c == ']')) {
-                    openBrackets--;
+                    depth--;
                 }
                 endIndex = i;
             }

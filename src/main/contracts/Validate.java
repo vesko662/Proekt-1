@@ -1,6 +1,6 @@
 package main.contracts;
 
-import main.exeptions.ValidateException;
+import main.exceptions.ValidateException;
 
 public interface Validate {
 

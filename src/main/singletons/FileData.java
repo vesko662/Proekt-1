@@ -43,7 +43,7 @@ public class FileData {
         return isFileOpen;
     }
 
-    public static synchronized FileData getInstance()
+    public static  FileData getInstance()
     {
         if (instance == null)
             instance = new FileData();

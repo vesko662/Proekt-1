@@ -1,7 +1,7 @@
 package main.enums;
 
 public enum ValidationMessages {
-       EXPECTED_CURLY_BRACKETS1("Expected '{'!"),
+    EXPECTED_CURLY_BRACKETS1("Expected '{'!"),
     EXPECTED_DUALITY("Expected ':' after key!"),
     EXPECTED_CURLY_BRACKETS_OR_COMMA("Expected ',' or '}'!"),
     EXPECTED_SQUARE_BRACKETS1("Expected '['!"),
@@ -10,7 +10,9 @@ public enum ValidationMessages {
     UNCLOSED_STRING("Unclosed string!"),
     INVALID_VALUE("Invalid value!"),
     INVALID_BOOLEAN("Invalid boolean!"),
-    INVALID_JSON_START("Json need to start with \"{\"!");
+    INVALID_JSON_START("Json need to start with \"{\"!"),
+    INVALID_JSON_END("Json need to end with \"}\"!"),
+    ARRAY_ELEMENTS_NOT_SAME("The elements in array are not the same!") ;
 
     private  String message;
 

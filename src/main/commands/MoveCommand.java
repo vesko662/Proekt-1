@@ -2,7 +2,7 @@ package main.commands;
 
 import main.contracts.Command;
 import main.enums.CommandMessages;
-import main.exeptions.CommandException;
+import main.exceptions.CommandException;
 import main.singletons.FileData;
 
 public class MoveCommand implements Command {
@@ -32,10 +32,6 @@ public class MoveCommand implements Command {
 
         int removeStart = start;
         int removeEnd = findEndOfValue(json, start);
-
-        if (removeEnd < json.length() && json.charAt(removeEnd) == ',') {
-            removeEnd++;
-        }
 
         String before = json.substring(0, removeStart);
         String after = json.substring(removeEnd);

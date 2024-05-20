@@ -2,11 +2,10 @@ package main;
 
 import main.commands.*;
 import main.contracts.Command;
-import main.exeptions.CommandException;
+import main.exceptions.CommandException;
 import main.singletons.FileData;
+import java.util.*;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class CommandHandler {
     private  Map<String, Command> commands = new HashMap<>();
@@ -24,7 +23,7 @@ public class CommandHandler {
         Command command = commands.get(commandKeyword);
         if (command != null) {
             try {
-                command.execute(sInput.length==1?"":sInput[1]);
+                command.execute(sInput.length ==1 ? "" : sInput[1]);
                 checkFileState();
             } catch (CommandException ce) {
                 System.out.println(ce.getMessage());

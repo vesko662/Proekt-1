@@ -2,8 +2,8 @@ package main.file;
 
 import main.contracts.Validate;
 import main.enums.FileMessages;
-import main.exeptions.FileException;
-import main.exeptions.ValidateException;
+import main.exceptions.FileException;
+import main.exceptions.ValidateException;
 import main.singletons.FileData;
 import main.validate.JsonValidator;
 

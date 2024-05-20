@@ -1,7 +1,7 @@
 package main.file;
 
 import main.enums.FileMessages;
-import main.exeptions.FileException;
+import main.exceptions.FileException;
 
 import java.io.*;
 

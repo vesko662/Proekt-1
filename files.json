@@ -1,0 +1,10 @@
+{
+  "kind": true,
+  "etag": "q4ibjmYp1KA3RqMF4jFLl6PBwOg",
+  "nextPageToken": "CAUQAA",
+  "regionCode": "NL",
+  "pageInfo": {
+    "totalResults": 1000000,
+    "resultsPerPage": 5
+  }
+}

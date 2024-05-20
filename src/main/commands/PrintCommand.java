@@ -59,7 +59,7 @@ public class PrintCommand implements Command {
                     break;
             }
         }
-        System.out.println(result.toString());
+        System.out.println(result);
     }
 
     private  void appendIndent(StringBuilder result, int indentLevel) {

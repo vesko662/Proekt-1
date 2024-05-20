@@ -1,6 +1,6 @@
 package main.commands;
 
-import main.exeptions.FileException;
+import main.exceptions.FileException;
 import main.file.FileWrite;
 import main.contracts.Command;
 import main.singletons.FileData;

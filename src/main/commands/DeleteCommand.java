@@ -2,7 +2,7 @@ package main.commands;
 
 import main.contracts.Command;
 import main.enums.CommandMessages;
-import main.exeptions.CommandException;
+import main.exceptions.CommandException;
 import main.singletons.FileData;
 
 public class DeleteCommand implements Command {

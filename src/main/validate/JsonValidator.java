@@ -2,7 +2,7 @@ package main.validate;
 
 import main.contracts.Validate;
 import main.enums.ValidationMessages;
-import main.exeptions.ValidateException;
+import main.exceptions.ValidateException;
 
 public class JsonValidator implements Validate {
 
@@ -146,6 +146,11 @@ public class JsonValidator implements Validate {
                 error(ValidationMessages.INVALID_JSON_START);
             }
             validateValue();
+            if (!json.endsWith("}"))
+            {
+                error(ValidationMessages.INVALID_JSON_END);
+            }
+
         }
 }
 

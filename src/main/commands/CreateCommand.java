@@ -2,8 +2,8 @@ package main.commands;
 
 import main.contracts.Command;
 import main.enums.CommandMessages;
-import main.exeptions.CommandException;
-import main.exeptions.ValidateException;
+import main.exceptions.CommandException;
+import main.exceptions.ValidateException;
 import main.singletons.FileData;
 import main.validate.JsonValidator;
 
