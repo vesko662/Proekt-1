@@ -11,8 +11,7 @@ public enum ValidationMessages {
     INVALID_VALUE("Invalid value!"),
     INVALID_BOOLEAN("Invalid boolean!"),
     INVALID_JSON_START("Json need to start with \"{\"!"),
-    INVALID_JSON_END("Json need to end with \"}\"!"),
-    ARRAY_ELEMENTS_NOT_SAME("The elements in array are not the same!") ;
+    INVALID_JSON_END("Json need to end with \"}\"!");
 
     private  String message;
 

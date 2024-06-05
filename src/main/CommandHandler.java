@@ -2,6 +2,7 @@ package main;
 
 import main.commands.*;
 import main.contracts.Command;
+import main.contracts.JSON;
 import main.exceptions.CommandException;
 import main.singletons.FileData;
 import java.util.*;
@@ -9,7 +10,7 @@ import java.util.*;
 
 public class CommandHandler {
     private  Map<String, Command> commands = new HashMap<>();
-
+    private JSON j=null;
     public CommandHandler() {
         commands.put("open", new OpenCommand());
         commands.put("exit",new ExitCommand());
@@ -23,7 +24,7 @@ public class CommandHandler {
         Command command = commands.get(commandKeyword);
         if (command != null) {
             try {
-                command.execute(sInput.length ==1 ? "" : sInput[1]);
+               j= command.execute(sInput.length ==1 ? "" : sInput[1],j);
                 checkFileState();
             } catch (CommandException ce) {
                 System.out.println(ce.getMessage());
