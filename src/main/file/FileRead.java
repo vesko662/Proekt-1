@@ -1,11 +1,13 @@
 package main.file;
 
+import main.contracts.JSON;
 import main.contracts.Validate;
 import main.enums.FileMessages;
 import main.exceptions.FileException;
 import main.exceptions.ValidateException;
+import main.parcer.JSONParser;
 import main.singletons.FileData;
-import main.validate.JsonValidator;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -56,15 +58,6 @@ public class FileRead {
             error(FileMessages.ERROR_WHEN_READING_FILE);
         }
 
-        try {
-        Validate jsonValidator=new JsonValidator(fileContent.toString());
-         jsonValidator.validate();
-
-        } catch (ValidateException ve)
-        {
-         System.out.println(ve.getMessage());
-         error(FileMessages.INCORRECT_VALIDATION);
-        }
         return fileContent.toString();
     }
     private void error(FileMessages fileMessages) throws FileException {

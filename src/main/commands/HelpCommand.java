@@ -1,6 +1,7 @@
 package main.commands;
 
 import main.contracts.Command;
+import main.contracts.JSON;
 
 import java.util.Map;
 
@@ -12,11 +13,12 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public void execute(String args) {
+    public JSON execute(String args, JSON j) {
         System.out.println("Available commands:");
         for (Map.Entry<String, Command> entry : commands.entrySet()) {
             System.out.println(entry.getKey() + " - " + entry.getValue().getDescription());
         }
+        return null;
     }
 
     @Override
