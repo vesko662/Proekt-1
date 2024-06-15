@@ -1,78 +1,24 @@
 package main.commands;
 
 import main.contracts.Command;
+import main.contracts.JSON;
 import main.enums.CommandMessages;
 import main.exceptions.CommandException;
-import main.singletons.FileData;
+import main.jsonStructure.*;
 
 public class DeleteCommand implements Command {
     @Override
-    public void execute(String args) throws CommandException {
-        FileData data = FileData.getInstance();
-        String json=data.getFileData();
-        if (args.equals(""))
+    public JSON execute(String args, JSON j) throws CommandException {
+        if (args.isEmpty())
         {
             error(CommandMessages.INVALID_ARGUMENTS);
         }
-        String[] keys = args.split("\\.");
-        int start = 0;
+        String[] path=args.split("\\.");
 
-        for (String key : keys) {
-            String searchKey = "\"" + key + "\":";
-            start = json.indexOf(searchKey, start);
-            if (start == -1) {
-                error(CommandMessages.INVALID_KEY);
-            }
-            start += searchKey.length();
+        if (!dObj((JSONObject) j, path, 0)) {
+            error(CommandMessages.INVALID_PATH);
         }
-
-        int removeStart = start;
-        while (json.charAt(removeStart - 1) != '{' && json.charAt(removeStart - 1) != ',') {
-            removeStart--;
-        }
-
-        int removeEnd = findEndOfValue(json, start);
-
-        if (removeEnd < json.length() && json.charAt(removeEnd) == ',') {
-            removeEnd++;
-        }
-
-        String before = json.substring(0, removeStart);
-        String after = json.substring(removeEnd);
-
-        if (before.trim().endsWith(",") && (after.startsWith("}") || after.isEmpty())) {
-            before = before.substring(0, before.lastIndexOf(","));
-        }
-
-        data.setFileData(before + after);
-        System.out.println("Successfully deleted at "+ args);
-    }
-
-    private  int findEndOfValue(String json, int start) {
-        int depth = 0;
-        boolean inQuotes = false;
-        for (int i = start; i < json.length(); i++)
-        {
-            char c = json.charAt(i);
-            if (c == '"' && (i == 0 || json.charAt(i - 1) != '\\'))
-            {
-                inQuotes = !inQuotes;
-            } else if (!inQuotes)
-            {
-                if (c == '{' || c == '[')
-                {
-                    depth++;
-                } else if (c == '}' || c == ']')
-                {
-                    depth--;
-                }
-                if ((c == ',' && depth == 0) || depth < 0)
-                {
-                    return i;
-                }
-            }
-        }
-        return json.length();
+        return j;
     }
 
 
@@ -83,5 +29,54 @@ public class DeleteCommand implements Command {
 
     private void error(CommandMessages commandMessages) throws CommandException {
         throw new CommandException(commandMessages);
+    }
+    private boolean dObj(JSONObject obj, String[] keys, int index) {
+        if (index == keys.length - 1) {
+            if (obj.containsKey(keys[index])) {
+                obj.remove(keys[index]);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        JSON value = obj.get(keys[index]);
+        if (value instanceof JSONObject) {
+            return dObj((JSONObject) value, keys, index + 1);
+        } else if (value instanceof JSONArray) {
+            try {
+                int arrayIndex = Integer.parseInt(keys[index + 1]);
+                return dArr((JSONArray) value, keys, index + 1, arrayIndex);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean dArr(JSONArray array, String[] keys, int index, int arrayIndex) {
+        if (index == keys.length - 1) {
+            if (arrayIndex < array.size()) {
+                array.remove(arrayIndex);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        JSON value = array.get(arrayIndex);
+        if (value instanceof JSONObject) {
+            return dObj((JSONObject) value, keys, index + 1);
+        } else if (value instanceof JSONArray) {
+            try {
+                int nextArrayIndex = Integer.parseInt(keys[index + 1]);
+                return dArr((JSONArray) value, keys, index + 1, nextArrayIndex);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

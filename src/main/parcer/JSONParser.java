@@ -12,14 +12,6 @@ public class JSONParser {
     public JSON parse(String json) throws ValidateException {
         this.json = json;
         this.index = 0;
-        if (!this.json.startsWith("{"))
-        {
-            error(ValidationMessages.INVALID_JSON_START);
-        }
-        else if(!this.json.endsWith("}"))
-        {
-            error(ValidationMessages.INVALID_JSON_END);
-        }
         return parseValue();
     }
 

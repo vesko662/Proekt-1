@@ -1,57 +1,28 @@
 package main.commands;
 
 import main.contracts.Command;
+import main.contracts.JSON;
 import main.enums.CommandMessages;
 import main.exceptions.CommandException;
-import main.singletons.FileData;
+import main.jsonStructure.*;
+
+import java.util.*;
 
 public class SearchCommand implements Command {
     @Override
-    public void execute(String args) throws CommandException {
-        FileData data = FileData.getInstance();
-        String json=data.getFileData().trim();
-        if (args.equals(""))
+    public JSON execute(String args, JSON j) throws CommandException {
+        List<JSON> results = new ArrayList<>();
+        sObj(j, args, results);
+        if (results.isEmpty())
         {
-            error(CommandMessages.INVALID_ARGUMENTS);
+            error(CommandMessages.INVALID_KEY);
         }
-        String[] foundKeys = json.split("\"" + args + "\"\\s*:\\s*");
-
-        if (foundKeys.length > 1) {
-            for (int i = 1; i < foundKeys.length; i++) {
-                String value = foundKeys[i];
-                int endIdx = findEndOfValue(value);
-                System.out.println(value.substring(0, endIdx));
-            }
-        } else {
-           error(CommandMessages.INVALID_KEY);
+        for (JSON found:results) {
+            System.out.println(found.stringify());
         }
+        return j;
     }
-    private int findEndOfValue(String value) {
-        int endIndex = 0;
-        if (value.charAt(0) == '[' || value.charAt(0) == '{') {
 
-            int depth = 1;
-            for (int i = 1; i < value.length() && depth > 0; i++) {
-                char c = value.charAt(i);
-                if ((c == '{' || c == '[')) {
-                    depth++;
-                } else if ((c == '}' || c == ']')) {
-                    depth--;
-                }
-                endIndex = i;
-            }
-        } else {
-
-            for (int i = 0; i < value.length(); i++) {
-                char c = value.charAt(i);
-                if (c == ',' || c == '}' || c == ']') {
-                    break;
-                }
-                endIndex = i;
-            }
-        }
-        return endIndex + 1;
-    }
     @Override
     public String getDescription() {
         return "Shows all the matches.";
@@ -59,5 +30,31 @@ public class SearchCommand implements Command {
 
     private void error(CommandMessages commandMessages) throws CommandException {
         throw new CommandException(commandMessages);
+    }
+
+
+    private static void sObj(JSON obj, String key, List<JSON> results) {
+        if (((JSONObject)obj).containsKey(key)) {
+            results.add(((JSONObject)obj).get(key));
+        }
+        for (Map.Entry<String, JSON> entry :((JSONObject)obj).get()) {
+            JSON value = entry.getValue();
+            if (value instanceof JSONObject) {
+                sObj(value, key, results);
+            } else if (value instanceof JSONArray) {
+                sArr((JSONArray) value, key, results);
+            }
+        }
+    }
+
+    private static void sArr(JSONArray array, String key, List<JSON> results) {
+        for (int i = 0; i < array.size(); i++) {
+            JSON value =array.get(i);
+            if (value instanceof JSONObject) {
+                sObj(value, key, results);
+            } else if (value instanceof JSONArray) {
+                sArr((JSONArray) value, key, results);
+            }
+        }
     }
 }
