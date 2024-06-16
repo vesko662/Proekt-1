@@ -1,103 +1,46 @@
 package main.commands;
 
 import main.contracts.Command;
+import main.contracts.JSON;
 import main.enums.CommandMessages;
 import main.exceptions.CommandException;
 import main.exceptions.ValidateException;
-import main.singletons.FileData;
-import main.validate.JsonValidator;
+import main.jsonStructure.*;
+import main.parcer.JSONParser;
 
 public class SetCommand implements Command {
     @Override
-    public void execute(String args) throws CommandException {
-        FileData data = FileData.getInstance();
-        String json=data.getFileData().trim();
-        String[] ar=args.split(" ",2);
-        if (ar.length<2)
-        {
+    public JSON execute(String args, JSON j) throws CommandException {
+        if (args.isEmpty()) {
             error(CommandMessages.INVALID_ARGUMENTS);
         }
-        String path=ar[0];
-        String newValue=ar[1];
 
+        String[] parts = args.split(" ", 2);
+        if (parts.length < 2) {
+            error(CommandMessages.INVALID_ARGUMENTS);
+        }
+
+        String path = parts[0];
+        String jsonString = parts[1];
+
+        JSON newValue=null;
         try {
-
-                JsonValidator validate=new JsonValidator(newValue);
-                validate.validateValue();
-
-        }catch (ValidateException ve)
-       {
-            System.out.println(ve.getMessage());
-           error(CommandMessages.INVALID_JSON);
-      }
-
-
-        String[] splitPath = path.split("\\.");
-        String modJson = json;
-        int startIndex = 0;
-
-        for (int i = 0; i < splitPath.length; i++) {
-            String key = splitPath[i];
-            startIndex = modJson.indexOf("\"" + key + "\"", startIndex);
-            if (startIndex == -1) {
-                error(CommandMessages.INVALID_PATH);
-            }
-            startIndex += key.length() + 2;
-
-            int colonIndex = modJson.indexOf(":", startIndex);
-            if (colonIndex == -1) {
-                error(CommandMessages.INVALID_STRUCTURE);
-            }
-
-
-            int valueStart = findStartOfValue(modJson, colonIndex + 1);
-            int valueEnd = findEndOfValue(modJson, valueStart);
-
-            if (i == splitPath.length - 1) {
-                modJson = modJson.substring(0, valueStart) + newValue + modJson.substring(valueEnd);
-            } else {
-                startIndex = valueStart;
-            }
+            JSONParser parser = new JSONParser();
+            newValue = parser.parse(jsonString);
+        } catch (ValidateException e) {
+            System.out.println(e.getMessage());
+            error(CommandMessages.INVALID_JSON);
         }
 
-        data.setFileData(modJson);
-    }
-
-    private  int findStartOfValue(String json, int start) {
-        while (start < json.length() && (json.charAt(start) == ' ' || json.charAt(start) == '\t')) {
-            start++;
+        String[] keys = path.split("\\.");
+        if (!sObj((JSONObject) j, keys, 0, newValue)) {
+            error(CommandMessages.INVALID_PATH);
         }
-        return start;
+
+        return j;
     }
 
 
-    private  int findEndOfValue(String json, int start) {
-        int depth = 0;
-        boolean inQuotes = false;
-        for (int i = start; i < json.length(); i++)
-        {
-            char c = json.charAt(i);
-            if (c == '"' && (i == 0 || json.charAt(i - 1) != '\\'))
-            {
-                inQuotes = !inQuotes;
-            } else if (!inQuotes)
-            {
-                if (c == '{' || c == '[')
-                {
-                    depth++;
-                 }
-                else if (c == '}' || c == ']')
-                {
-                    depth--;
-                }
-                if ((c == ',' && depth == 0) || depth < 0)
-                {
-                    return i;
-                }
-            }
-        }
-        return json.length();
-    }
     @Override
     public String getDescription() {
         return "set <path> <string>. Path to the key <path> and json as <string>.";
@@ -105,5 +48,55 @@ public class SetCommand implements Command {
 
     private void error(CommandMessages commandMessages) throws CommandException {
         throw new CommandException(commandMessages);
+    }
+
+    private boolean sObj(JSONObject obj, String[] keys, int index, JSON newValue) {
+        if (index == keys.length - 1) {
+            if (obj.containsKey(keys[index])) {
+                obj.put(keys[index], newValue);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        JSON value = obj.get(keys[index]);
+        if (value instanceof JSONObject) {
+            return sObj((JSONObject) value, keys, index + 1, newValue);
+        } else if (value instanceof JSONArray) {
+            try {
+                int arrayIndex = Integer.parseInt(keys[index + 1]);
+                return sArr((JSONArray) value, keys, index + 1, arrayIndex, newValue);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean sArr(JSONArray array, String[] keys, int index, int arrayIndex, JSON newValue) {
+        if (index == keys.length - 1) {
+            if (arrayIndex < array.size()) {
+                array.set(arrayIndex, newValue);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        JSON value = array.get(arrayIndex);
+        if (value instanceof JSONObject) {
+            return sObj((JSONObject) value, keys, index + 1, newValue);
+        } else if (value instanceof JSONArray) {
+            try {
+                int nextArrayIndex = Integer.parseInt(keys[index + 1]);
+                return sArr((JSONArray) value, keys, index + 1, nextArrayIndex, newValue);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

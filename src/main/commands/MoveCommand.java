@@ -1,77 +1,34 @@
 package main.commands;
 
 import main.contracts.Command;
+import main.contracts.JSON;
 import main.enums.CommandMessages;
 import main.exceptions.CommandException;
-import main.singletons.FileData;
+import main.jsonStructure.*;
 
 public class MoveCommand implements Command {
+    private JSON element=null;
     @Override
-    public void execute(String args) throws CommandException {
-        FileData data = FileData.getInstance();
-        String json=data.getFileData();
-        String[] paths=args.split(" ");
-        if (paths.length<2)
-        {
+    public JSON execute(String args, JSON j) throws CommandException {
+        if (args.isEmpty()) {
             error(CommandMessages.INVALID_ARGUMENTS);
         }
-        String pathFrom=paths[0];
-        String pathTo=paths[1];
 
-        String[] keys = pathFrom.split("\\.");
-        int start = 0;
-
-        for (String key : keys) {
-            String searchKey = "\"" + key + "\":";
-            start = json.indexOf(searchKey, start);
-            if (start == -1) {
-                error(CommandMessages.INVALID_KEY);
-            }
-            start += searchKey.length();
+        String[] parts = args.split(" ", 2);
+        if (parts.length < 2) {
+            error(CommandMessages.INVALID_ARGUMENTS);
         }
 
-        int removeStart = start;
-        int removeEnd = findEndOfValue(json, start);
+        String fromPath = parts[0];
+        String toPath = parts[1];
 
-        String before = json.substring(0, removeStart);
-        String after = json.substring(removeEnd);
-        String element=json.substring(removeStart,removeEnd);
-
-        if (before.trim().endsWith(",") && (after.startsWith("}") || after.isEmpty())) {
-            before = before.substring(0, before.lastIndexOf(","));
+        if (!mObj((JSONObject) j, fromPath.split("\\."), 0)) {
+            error(CommandMessages.INVALID_PATH);
         }
-        before = before.concat("\" \"");
+        new SetCommand().execute(fromPath+" "+"\" \"",j);
+        new SetCommand().execute(toPath+" "+element.stringify(),j);
 
-        data.setFileData(before+ after);
-      new SetCommand().execute(pathTo+" "+element);
-        System.out.println("Successfully moved at "+ pathTo);
-    }
-
-    private  int findEndOfValue(String json, int start) {
-        int depth = 0;
-        boolean inQuotes = false;
-        for (int i = start; i < json.length(); i++)
-        {
-            char c = json.charAt(i);
-            if (c == '"' && (i == 0 || json.charAt(i - 1) != '\\'))
-            {
-                inQuotes = !inQuotes;
-            } else if (!inQuotes)
-            {
-                if (c == '{' || c == '[')
-                {
-                    depth++;
-                } else if (c == '}' || c == ']')
-                {
-                    depth--;
-                }
-                if ((c == ',' && depth == 0) || depth < 0)
-                {
-                    return i;
-                }
-            }
-        }
-        return json.length();
+        return j;
     }
     private void error(CommandMessages commandMessages) throws CommandException {
         throw new CommandException(commandMessages);
@@ -79,5 +36,54 @@ public class MoveCommand implements Command {
     @Override
     public String getDescription() {
         return "move <from> <to> move the data from given path <from> to the other path <to>";
+    }
+    private boolean mObj(JSONObject obj, String[] keys, int index) {
+        if (index == keys.length - 1) {
+            if (obj.containsKey(keys[index])) {
+                element=obj.get(keys[index]);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        JSON value = obj.get(keys[index]);
+        if (value instanceof JSONObject) {
+            return mObj((JSONObject) value, keys, index + 1);
+        } else if (value instanceof JSONArray) {
+            try {
+                int arrayIndex = Integer.parseInt(keys[index + 1]);
+                return mArr((JSONArray) value, keys, index + 1, arrayIndex);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean mArr(JSONArray array, String[] keys, int index, int arrayIndex) {
+        if (index == keys.length - 1) {
+            if (arrayIndex < array.size()) {
+                element=  array.get(arrayIndex);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        JSON value = array.get(arrayIndex);
+        if (value instanceof JSONObject) {
+            return mObj((JSONObject) value, keys, index + 1);
+        } else if (value instanceof JSONArray) {
+            try {
+                int nextArrayIndex = Integer.parseInt(keys[index + 1]);
+                return mArr((JSONArray) value, keys, index + 1, nextArrayIndex);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }
