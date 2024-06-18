@@ -1,80 +1,43 @@
 package main.commands;
 
 import main.contracts.Command;
+import main.contracts.JSON;
 import main.enums.CommandMessages;
 import main.exceptions.CommandException;
 import main.exceptions.ValidateException;
-import main.singletons.FileData;
-import main.validate.JsonValidator;
+import main.jsonStructure.*;
+import main.parcer.JSONParser;
 
 public class CreateCommand implements Command {
     @Override
-    public void execute(String args) throws CommandException {
-        FileData data = FileData.getInstance();
-        String json = data.getFileData();
-        String[] parts = args.split(" ", 2);
-        if (parts.length<2)
-        {
+    public JSON execute(String args, JSON j) throws CommandException {
+        if (args.isEmpty()) {
             error(CommandMessages.INVALID_ARGUMENTS);
         }
-        String path=parts[0];
-        String newValue=parts[1];
 
-        String[] splitPath = path.split("\\.");
+        String[] parts = args.split(" ", 2);
+        if (parts.length < 2) {
+            error(CommandMessages.INVALID_ARGUMENTS);
+        }
 
+        String path = parts[0];
+        String jsonString = parts[1];
+
+        JSON newValue;
         try {
-
-            JsonValidator validate=new JsonValidator(newValue);
-            validate.validateValue();
-
-        }catch (ValidateException ve)
-        {
-            System.out.println(ve.getMessage());
-            error(CommandMessages.INVALID_JSON);
-        }
-        StringBuilder newJson = new StringBuilder(json);
-
-        if ("{}".equals(splitPath[0].trim())) {
-
-
-            int insertionPoint = newJson.lastIndexOf("}");
-            if (newJson.charAt(insertionPoint - 1) == '{') {
-                newJson.insert(insertionPoint,splitPath[1]+":"+ newValue);
-            } else {
-                newJson.insert(insertionPoint, ", " +splitPath[1]+":"+ newValue);
-            }
-            data.setFileData(newJson.toString());
-            return ;
+            JSONParser parser = new JSONParser();
+            newValue = parser.parse(jsonString);
+        } catch (ValidateException e) {
+            System.out.println(e.getMessage());
+            throw new CommandException(CommandMessages.INVALID_JSON);
         }
 
-
-        int startIndex = 1;
-        for (int i = 0; i < splitPath.length; i++) {
-            String key = splitPath[i];
-            int keyIndex = newJson.indexOf("\"" + key + "\"", startIndex);
-
-            if (keyIndex == -1 && i<splitPath.length-1) {
-               error(CommandMessages.INVALID_KEY);
-           }
-
-            if (i == splitPath.length - 1) {
-                int nextBrace = newJson.indexOf("}", startIndex);
-                if (newJson.charAt(nextBrace - 1) == '{') {
-                    newJson.insert(nextBrace, "\"" + key + "\":" + newValue);
-                } else {
-                    newJson.insert(nextBrace, ", \"" + key + "\":" + newValue);
-                }
-                data.setFileData(newJson.toString());
-                return ;
-            }
-
-            if (newJson.charAt(startIndex) == '{') {
-                startIndex++;
-            }
+        String[] keys = path.split("\\.");
+        if (!cObj((JSONObject) j, keys, 0, newValue)) {
+            error(CommandMessages.INVALID_PATH);
         }
 
-        data.setFileData(newJson.toString());
-        System.out.println("Successfully created at "+path);
+        return j;
     }
 
     @Override
@@ -84,5 +47,71 @@ public class CreateCommand implements Command {
 
     private void error(CommandMessages commandMessages) throws CommandException {
         throw new CommandException(commandMessages);
+    }
+    private boolean cObj(JSONObject obj, String[] keys, int index, JSON newValue) throws CommandException {
+        if (index == keys.length - 1) {
+            if (obj.containsKey(keys[index])) {
+                error(CommandMessages.ELEMENT_ALREADY_EXISTS);
+                return false;
+            } else {
+                obj.put(keys[index], newValue);
+                return true;
+            }
+        }
+
+        JSON value = obj.get(keys[index]);
+        if (value == null) {
+            JSONObject newObj = new JSONObject();
+            obj.put(keys[index], newObj);
+            return cObj(newObj, keys, index + 1, newValue);
+        }
+
+        if (value instanceof JSONObject) {
+            return cObj((JSONObject) value, keys, index + 1, newValue);
+        } else if (value instanceof JSONArray) {
+            try {
+                int arrayIndex = Integer.parseInt(keys[index + 1]);
+                return cArr((JSONArray) value, keys, index + 1, arrayIndex, newValue);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean cArr(JSONArray array, String[] keys, int index, int arrayIndex, JSON newValue) throws CommandException {
+        if (index == keys.length - 1) {
+            if (arrayIndex < array.size()) {
+                error(CommandMessages.ELEMENT_ALREADY_EXISTS);
+                return false;
+            } else {
+                while (array.size() <= arrayIndex) {
+                    array.add(null);
+                }
+                array.set(arrayIndex, newValue);
+                return true;
+            }
+        }
+
+        JSON value = array.get(arrayIndex);
+        if (value == null) {
+            JSONObject newObj = new JSONObject();
+            array.set(arrayIndex, newObj);
+            return cObj(newObj, keys, index + 1, newValue);
+        }
+
+        if (value instanceof JSONObject) {
+            return cObj((JSONObject) value, keys, index + 1, newValue);
+        } else if (value instanceof JSONArray) {
+            try {
+                int nextArrayIndex = Integer.parseInt(keys[index + 1]);
+                return cArr((JSONArray) value, keys, index + 1, nextArrayIndex, newValue);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }
