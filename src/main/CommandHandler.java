@@ -63,4 +63,3 @@ public class CommandHandler {
         }
     }
 }
-//open D:\Programing\University\OOP2\proect\file.json

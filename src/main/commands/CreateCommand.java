@@ -37,6 +37,7 @@ public class CreateCommand implements Command {
             error(CommandMessages.INVALID_PATH);
         }
 
+        System.out.println("Successfully created "+keys[keys.length-1]);
         return j;
     }
 

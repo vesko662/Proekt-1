@@ -33,7 +33,7 @@ public class SearchCommand implements Command {
     }
 
 
-    private static void sObj(JSON obj, String key, List<JSON> results) {
+    private void sObj(JSON obj, String key, List<JSON> results) {
         if (((JSONObject)obj).containsKey(key)) {
             results.add(((JSONObject)obj).get(key));
         }
@@ -47,7 +47,7 @@ public class SearchCommand implements Command {
         }
     }
 
-    private static void sArr(JSONArray array, String key, List<JSON> results) {
+    private void sArr(JSONArray array, String key, List<JSON> results) {
         for (int i = 0; i < array.size(); i++) {
             JSON value =array.get(i);
             if (value instanceof JSONObject) {

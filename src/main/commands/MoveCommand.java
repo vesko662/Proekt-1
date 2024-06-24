@@ -28,6 +28,7 @@ public class MoveCommand implements Command {
         new SetCommand().execute(fromPath+" "+"\" \"",j);
         new SetCommand().execute(toPath+" "+element.stringify(),j);
 
+        System.out.println("Successfully moved "+fromPath.split("\\.")[fromPath.split("\\.").length-1]);
         return j;
     }
     private void error(CommandMessages commandMessages) throws CommandException {

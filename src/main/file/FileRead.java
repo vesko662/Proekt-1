@@ -1,14 +1,8 @@
 package main.file;
 
-import main.contracts.JSON;
-import main.contracts.Validate;
 import main.enums.FileMessages;
 import main.exceptions.FileException;
-import main.exceptions.ValidateException;
-import main.parcer.JSONParser;
 import main.singletons.FileData;
-
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

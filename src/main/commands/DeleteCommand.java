@@ -18,6 +18,7 @@ public class DeleteCommand implements Command {
         if (!dObj((JSONObject) j, path, 0)) {
             error(CommandMessages.INVALID_PATH);
         }
+        System.out.println("Successfully deleted "+path[path.length-1]);
         return j;
     }
 
